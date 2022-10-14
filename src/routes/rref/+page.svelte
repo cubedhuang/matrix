@@ -4,7 +4,6 @@
 	import MatrixInput from '$lib/components/MatrixInput.svelte';
 	import MatrixOutput from '$lib/components/MatrixOutput.svelte';
 	import NumberInput from '$lib/components/NumberInput.svelte';
-	import ValueBox from '$lib/components/ValueBox.svelte';
 
 	import { rref, resize } from '$lib/matrix';
 

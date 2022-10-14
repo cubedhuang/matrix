@@ -25,7 +25,77 @@ export function resize(
 	return result;
 }
 
+export function zero(rows: number, cols: number): Matrix {
+	return resize([], rows, cols);
+}
+
 // Unary Operations
+
+/**
+ * Puts a matrix into row echelon form without reducing
+ * @param matrix The matrix to put into row echelon form
+ * @returns A copy of the matrix in row echelon form
+ */
+export function ref(matrix: ReadonlyMatrix): Matrix {
+	const result = copy(matrix);
+
+	for (let row = 0; row < result.length; row++) {
+		const pivot = result[row].findIndex(x => x !== 0);
+
+		if (pivot === -1) {
+			continue;
+		}
+
+		for (let i = row + 1; i < result.length; i++) {
+			const factor = result[i][pivot] / result[row][pivot];
+
+			for (let j = pivot; j < result[i].length; j++) {
+				result[i][j] -= result[row][j] * factor;
+			}
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Performs RREF on a matrix
+ * @param matrix The matrix to row reduce
+ * @returns A row-reduced copy of the matrix
+ */
+export function rref(matrix: ReadonlyMatrix): Matrix {
+	const result = copy(matrix);
+
+	for (let row = 0; row < result.length; row++) {
+		const pivot = result[row].findIndex(x => x !== 0);
+
+		if (pivot === -1) {
+			continue;
+		}
+
+		for (let i = row + 1; i < result.length; i++) {
+			const factor = result[i][pivot] / result[row][pivot];
+
+			for (let j = pivot; j < result[i].length; j++) {
+				result[i][j] -= result[row][j] * factor;
+			}
+		}
+
+		for (let i = 0; i < row; i++) {
+			const factor = result[i][pivot] / result[row][pivot];
+
+			for (let j = pivot; j < result[i].length; j++) {
+				result[i][j] -= result[row][j] * factor;
+			}
+		}
+
+		for (let i = 0; i < result[row].length; i++) {
+			result[row][i] /= result[row][pivot];
+		}
+	}
+
+	return result;
+}
 
 export function det(matrix: ReadonlyMatrix): number {
 	if (matrix.length !== matrix[0].length) {
@@ -40,10 +110,12 @@ export function det(matrix: ReadonlyMatrix): number {
 		return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
 	}
 
-	let result = 0;
+	const rowEchelon = ref(matrix);
 
-	for (let row = 0; row < matrix.length; row++) {
-		result += matrix[row][0] * cofactor(matrix, row, 0);
+	let result = 1;
+
+	for (let i = 0; i < rowEchelon.length; i++) {
+		result *= rowEchelon[i][i];
 	}
 
 	return result;
@@ -100,47 +172,38 @@ export function inverse(matrix: ReadonlyMatrix): Matrix | string {
 	return transpose(result);
 }
 
-export function rref(matrix: ReadonlyMatrix): Matrix {
-	const result = copy(matrix);
+interface LU {
+	/**
+	 * The lower triangular matrix (always square)
+	 */
+	l: Matrix;
+	/**
+	 * The upper triangular matrix (may be rectangular)
+	 */
+	u: Matrix;
+}
 
-	let lead = 0;
+/**
+ * Create the LU decomposition of a matrix
+ * @param matrix The matrix to decompose - may be rectangular
+ */
+export function lu(matrix: ReadonlyMatrix): LU {
+	const l: Matrix = zero(matrix.length, matrix.length);
+	const u: Matrix = copy(matrix);
 
-	for (let row = 0; row < result.length; row++) {
-		if (lead >= result[row].length) {
-			continue;
-		}
+	for (let row = 0; row < matrix.length; row++) {
+		l[row][row] = 1;
 
-		let i = row;
+		for (let col = row + 1; col < matrix.length; col++) {
+			l[col][row] = u[col][row] / u[row][row];
 
-		while (result[i][lead] === 0) {
-			i++;
-
-			if (i === result.length) {
-				i = row;
-				lead++;
-
-				if (lead === result[row].length) {
-					return result;
-				}
+			for (let i = row; i < matrix[col].length; i++) {
+				u[col][i] -= l[col][row] * u[row][i];
 			}
 		}
-
-		[result[i], result[row]] = [result[row], result[i]];
-
-		const div = result[row][lead];
-		result[row] = result[row].map(x => x / div);
-
-		for (let i = 0; i < result.length; i++) {
-			if (i !== row) {
-				const sub = result[i][lead];
-				result[i] = result[i].map((x, j) => x - sub * result[row][j]);
-			}
-		}
-
-		lead++;
 	}
 
-	return result;
+	return { l, u };
 }
 
 // Binary Operations
