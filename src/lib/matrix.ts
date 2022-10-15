@@ -38,13 +38,18 @@ export function resize(
 }
 
 /**
- * Creates a zero matrix with the given dimensions
- * @param rows The number of rows
- * @param cols The number of columns
- * @returns A zero matrix
+ * Creates an identity matrix with the given dimensions
+ * @param n The number of rows and columns
+ * @returns An identity matrix
  */
-export function zero(rows: number, cols: number): Matrix {
-	return resize([], rows, cols);
+export function identity(n: number): Matrix {
+	const result = resize([], n, n);
+
+	for (let i = 0; i < n; i++) {
+		result[i][i] = 1;
+	}
+
+	return result;
 }
 
 // Unary Operations
@@ -58,15 +63,18 @@ export function ref(matrix: ReadonlyMatrix): Matrix {
 	const result = copy(matrix);
 
 	for (let row = 0; row < result.length; row++) {
+		// Find the first non-zero element in the row
 		const pivot = result[row].findIndex(x => x !== 0);
 
-		if (pivot === -1) {
-			continue;
-		}
+		// If there is no non-zero element, skip this row
+		if (pivot === -1) continue;
 
+		// Through all rows below this one, subtract the pivot row
 		for (let i = row + 1; i < result.length; i++) {
+			// Find the factor to multiply the pivot row by
 			const factor = result[i][pivot] / result[row][pivot];
 
+			// Subtract the scaled pivot row from the current row
 			for (let j = pivot; j < result[i].length; j++) {
 				result[i][j] -= result[row][j] * factor;
 			}
@@ -85,28 +93,27 @@ export function rref(matrix: ReadonlyMatrix): Matrix {
 	const result = copy(matrix);
 
 	for (let row = 0; row < result.length; row++) {
+		// Find the first non-zero element in the row
 		const pivot = result[row].findIndex(x => x !== 0);
 
-		if (pivot === -1) {
-			continue;
-		}
+		// If there is no non-zero element, skip this row
+		if (pivot === -1) continue;
 
-		for (let i = row + 1; i < result.length; i++) {
+		// Subtract the pivot row from all other rows
+		for (let i = 0; i < result.length; i++) {
+			// Don't subtract the pivot row from itself
+			if (i === row) continue;
+
+			// Find the factor to multiply the pivot row by
 			const factor = result[i][pivot] / result[row][pivot];
 
+			// Subtract the scaled pivot row from the current row
 			for (let j = pivot; j < result[i].length; j++) {
 				result[i][j] -= result[row][j] * factor;
 			}
 		}
 
-		for (let i = 0; i < row; i++) {
-			const factor = result[i][pivot] / result[row][pivot];
-
-			for (let j = pivot; j < result[i].length; j++) {
-				result[i][j] -= result[row][j] * factor;
-			}
-		}
-
+		// Divide the pivot row by the pivot element
 		for (let i = 0; i < result[row].length; i++) {
 			result[row][i] /= result[row][pivot];
 		}
@@ -133,10 +140,11 @@ export function det(matrix: ReadonlyMatrix): number {
 		return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
 	}
 
+	// Place the matrix in row echelon form
 	const rowEchelon = ref(matrix);
 
+	// The determinant is the product of the main diagonal
 	let result = 1;
-
 	for (let i = 0; i < rowEchelon.length; i++) {
 		result *= rowEchelon[i][i];
 	}
@@ -211,6 +219,7 @@ export function inverse(matrix: ReadonlyMatrix): Matrix | string {
 
 	for (let row = 0; row < matrix.length; row++) {
 		result.push([]);
+
 		for (let col = 0; col < matrix[row].length; col++) {
 			result[row][col] = cofactor(matrix, row, col) / determinant;
 		}
@@ -238,17 +247,21 @@ interface LU {
  * @param matrix The matrix to decompose - may be rectangular
  */
 export function lu(matrix: ReadonlyMatrix): LU {
-	const l: Matrix = zero(matrix.length, matrix.length);
+	const l: Matrix = identity(matrix.length);
 	const u: Matrix = copy(matrix);
 
+	// For all elements under the main diagonal
 	for (let row = 0; row < matrix.length; row++) {
-		l[row][row] = 1;
-
 		for (let col = row + 1; col < matrix.length; col++) {
-			l[col][row] = u[col][row] / u[row][row];
+			// Find the factor to multiply the pivot row by
+			const factor = u[col][row] / u[row][row];
 
+			// Set the corresponding entry in the lower triangular matrix
+			l[col][row] = factor;
+
+			// Subtract the scaled pivot row from the current row
 			for (let i = row; i < matrix[col].length; i++) {
-				u[col][i] -= l[col][row] * u[row][i];
+				u[col][i] -= factor * u[row][i];
 			}
 		}
 	}
@@ -288,17 +301,19 @@ export function multiply(
 
 	const result: Matrix = [];
 
-	for (let aRow = 0; aRow < a.length; aRow++) {
-		result[aRow] = [];
+	// For each row in a
+	for (let row = 0; row < a.length; row++) {
+		result[row] = [];
 
-		for (let bCol = 0; bCol < b[0].length; bCol++) {
+		// For each column in b
+		for (let col = 0; col < b[0].length; col++) {
 			let sum = 0;
 
 			for (let i = 0; i < a[0].length; i++) {
-				sum += a[aRow][i] * b[i][bCol];
+				sum += a[row][i] * b[i][col];
 			}
 
-			result[aRow][bCol] = sum;
+			result[row][col] = sum;
 		}
 	}
 
