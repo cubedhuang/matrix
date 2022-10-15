@@ -319,3 +319,13 @@ export function multiply(
 
 	return result;
 }
+
+/**
+ * Multiplies a matrix by a scalar
+ * @param matrix The matrix to multiply
+ * @param scalar The scalar to multiply by
+ * @returns The product of the matrix and scalar
+ */
+export function scale(matrix: ReadonlyMatrix, scalar: number): Matrix {
+	return matrix.map(row => row.map(n => n * scalar));
+}

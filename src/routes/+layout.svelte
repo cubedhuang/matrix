@@ -20,6 +20,7 @@
 			Binary Operations
 		</p>
 		<NavLink href="/add">Add</NavLink>
+		<NavLink href="/scale">Scale</NavLink>
 		<NavLink href="/multiply">Multiply</NavLink>
 	</nav>
 
