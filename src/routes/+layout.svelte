@@ -13,6 +13,7 @@
 		<NavLink href="/determinant">Determinant</NavLink>
 		<NavLink href="/transpose">Transpose</NavLink>
 		<NavLink href="/inverse">Inverse</NavLink>
+		<NavLink href="/ref">Row Echelon</NavLink>
 		<NavLink href="/rref">RREF</NavLink>
 		<NavLink href="/lu">LU Decomposition</NavLink>
 		<p class="font-bold px-4 py-2 border-y border-black bg-white">

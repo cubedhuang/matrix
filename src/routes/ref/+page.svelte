@@ -5,7 +5,7 @@
 	import MatrixOutput from '$lib/components/MatrixOutput.svelte';
 	import NumberInput from '$lib/components/NumberInput.svelte';
 
-	import { rref, resize } from '$lib/matrix';
+	import { ref, resize } from '$lib/matrix';
 
 	let matrix = [
 		[1, 2, 3],
@@ -19,21 +19,23 @@
 		matrix = resize(matrix, n, m);
 	}
 
-	$: reduced = rref(matrix);
+	$: reduced = ref(matrix);
 </script>
 
 <svelte:head>
-	<title>RREF &ndash; Matrix Calculator</title>
+	<title>Row Echelon &ndash; Matrix Calculator</title>
 </svelte:head>
 
-<Header>RREF</Header>
+<Header>Row Echelon</Header>
 
 <p class="max-w-prose">
-	Reduced row echelon form is a form of a matrix in which the first non-zero
-	number from the left is always to the right of the first non-zero number in
-	the row above, rows consisting of all zeros are at the bottom of the matrix,
-	and the first non-zero number in each row is 1. It is a special case of row
-	echelon form.
+	Row echelon form is a form in which the first non-zero number from the left is
+	always to the right of the first non-zero number in the row above, and rows
+	consisting of all zeros are at the bottom of the matrix. Note that this is
+	different from reduced row echelon form (RREF), which is more restrictive.
+	This row echelon calculator does not scale any rows, meaning that the first
+	non-zero number in each row is not necessarily 1. This is useful for finding
+	several properties like the determinant, rank, and nullity of a matrix.
 </p>
 
 <div class="flex items-center gap-2">
