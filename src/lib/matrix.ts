@@ -4,10 +4,22 @@ type ReadonlyMatrix = ReadonlyArray<ReadonlyArray<number>>;
 
 // Internal Operations
 
+/**
+ * Copies a matrix
+ * @param matrix The matrix to copy
+ * @returns A copy of the matrix
+ */
 export function copy(matrix: ReadonlyMatrix): Matrix {
 	return matrix.map(row => row.slice());
 }
 
+/**
+ * Resizes a matrix
+ * @param matrix The matrix to resize
+ * @param rows The new number of rows
+ * @param cols The new number of columns
+ * @returns The resized matrix with 0s in the new cells
+ */
 export function resize(
 	matrix: ReadonlyMatrix,
 	rows: number,
@@ -25,6 +37,12 @@ export function resize(
 	return result;
 }
 
+/**
+ * Creates a zero matrix with the given dimensions
+ * @param rows The number of rows
+ * @param cols The number of columns
+ * @returns A zero matrix
+ */
 export function zero(rows: number, cols: number): Matrix {
 	return resize([], rows, cols);
 }
@@ -97,6 +115,11 @@ export function rref(matrix: ReadonlyMatrix): Matrix {
 	return result;
 }
 
+/**
+ * Finds the determinant of a matrix
+ * @param matrix The matrix to find the determinant of
+ * @returns The determinant of the matrix
+ */
 export function det(matrix: ReadonlyMatrix): number {
 	if (matrix.length !== matrix[0].length) {
 		throw new Error('Matrix must be square');
@@ -121,6 +144,13 @@ export function det(matrix: ReadonlyMatrix): number {
 	return result;
 }
 
+/**
+ * Finds the cofactor of a matrix at a given row and column
+ * @param matrix The matrix to find the cofactor of
+ * @param row The row of the cofactor
+ * @param col The column of the cofactor
+ * @returns The cofactor of the matrix at the given row and column
+ */
 export function cofactor(
 	matrix: ReadonlyMatrix,
 	row: number,
@@ -130,6 +160,13 @@ export function cofactor(
 	return sign * det(minor(matrix, row, col));
 }
 
+/**
+ * Finds the minor of a matrix at a given row and column
+ * @param matrix The matrix to find the minor of
+ * @param row The row of the minor
+ * @param col The column of the minor
+ * @returns The minor of the matrix at the given row and column
+ */
 export function minor(
 	matrix: ReadonlyMatrix,
 	row: number,
@@ -140,6 +177,11 @@ export function minor(
 		.map(r => r.filter((_, i) => i !== col));
 }
 
+/**
+ * Transposes a matrix
+ * @param matrix The matrix to transpose
+ * @returns The transpose of the matrix
+ */
 export function transpose(matrix: ReadonlyMatrix): Matrix {
 	const result: Matrix = [];
 
@@ -153,6 +195,11 @@ export function transpose(matrix: ReadonlyMatrix): Matrix {
 	return result;
 }
 
+/**
+ * Finds the inverse of a matrix
+ * @param matrix The matrix to find the inverse of
+ * @returns The inverse of the matrix
+ */
 export function inverse(matrix: ReadonlyMatrix): Matrix | string {
 	const determinant = det(matrix);
 
@@ -172,6 +219,9 @@ export function inverse(matrix: ReadonlyMatrix): Matrix | string {
 	return transpose(result);
 }
 
+/**
+ * The LU decomposition of a matrix
+ */
 interface LU {
 	/**
 	 * The lower triangular matrix (always square)
@@ -184,7 +234,7 @@ interface LU {
 }
 
 /**
- * Create the LU decomposition of a matrix
+ * Creates the LU decomposition of a matrix
  * @param matrix The matrix to decompose - may be rectangular
  */
 export function lu(matrix: ReadonlyMatrix): LU {
@@ -208,6 +258,12 @@ export function lu(matrix: ReadonlyMatrix): LU {
 
 // Binary Operations
 
+/**
+ * Adds two matrices together
+ * @param a The first matrix
+ * @param b The second matrix
+ * @returns The sum of the two matrices
+ */
 export function add(a: ReadonlyMatrix, b: ReadonlyMatrix): Matrix | string {
 	if (a.length !== b.length || a[0].length !== b[0].length) {
 		return 'Matrices must be the same dimensions';
@@ -216,6 +272,12 @@ export function add(a: ReadonlyMatrix, b: ReadonlyMatrix): Matrix | string {
 	return a.map((row, i) => row.map((n, j) => n + b[i][j]));
 }
 
+/**
+ * Multiplies two matrices together
+ * @param a The first matrix
+ * @param b The second matrix
+ * @returns The product of the two matrices
+ */
 export function multiply(
 	a: ReadonlyMatrix,
 	b: ReadonlyMatrix
