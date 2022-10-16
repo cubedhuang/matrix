@@ -39,7 +39,8 @@
 	<Loader
 		bind:matrix
 		on:load={() => {
-			n = Math.max(matrix.length, matrix[0].length);
+			n = matrix.length;
+			m = matrix[0].length;
 		}}
 	/>
 </div>
