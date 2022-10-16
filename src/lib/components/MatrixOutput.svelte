@@ -13,7 +13,7 @@
 	}
 </script>
 
-<div class="flex flex-col gap-2 items-center">
+<div class="flex flex-col gap-2 items-start">
 	<div
 		class="grid w-fit gap-1"
 		style:grid-template-columns="repeat({matrix[0]?.length ?? 1}, 1fr)"

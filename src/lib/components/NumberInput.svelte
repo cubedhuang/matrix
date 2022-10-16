@@ -6,7 +6,7 @@
 
 <input
 	type="number"
-	class="py-1 px-2 w-12 rounded border border-gray-300 focus:border-gray-600 transition-colors"
+	class="py-1 px-2 w-12 sm:w-14 rounded border border-gray-300 focus:border-gray-600 transition-colors"
 	{min}
 	{max}
 	bind:value

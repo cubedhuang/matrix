@@ -28,14 +28,6 @@
 
 <Header>RREF</Header>
 
-<p class="max-w-prose">
-	Reduced row echelon form is a form of a matrix in which the first non-zero
-	number from the left is always to the right of the first non-zero number in
-	the row above, rows consisting of all zeros are at the bottom of the matrix,
-	and the first non-zero number in each row is 1. It is a special case of row
-	echelon form.
-</p>
-
 <div class="flex items-center gap-2">
 	<div class="flex items-center gap-1">
 		<NumberInput min={1} bind:value={n} />
@@ -55,3 +47,11 @@
 <MatrixInput bind:matrix />
 
 <MatrixOutput matrix={reduced} />
+
+<p class="max-w-prose">
+	Reduced row echelon form is a form of a matrix in which the first non-zero
+	number from the left is always to the right of the first non-zero number in
+	the row above, rows consisting of all zeros are at the bottom of the matrix,
+	and the first non-zero number in each row is 1. It is a special case of row
+	echelon form.
+</p>
